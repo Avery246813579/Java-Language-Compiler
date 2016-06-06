@@ -1,0 +1,19 @@
+	public void test(int x){
+		x = 30;
+		
+		//cout x;
+	}
+
+	test();
+
+	int x = 43;
+	int y = 98, z= 54, u;
+	z = 31;
+	u=34;
+	
+	if(1 > 0 && 2 > 0 && 3 < 0){
+		cout "Executed";
+	}
+
+	dump;
+	//I DON'T LIKE STEVEN WOOD
