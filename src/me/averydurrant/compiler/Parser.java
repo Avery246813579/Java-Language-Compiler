@@ -6,6 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import me.averydurrant.compiler.members.Integer;
+import me.averydurrant.compiler.members.Member;
+import me.averydurrant.compiler.members.Members;
+import me.averydurrant.compiler.methods.Method;
+
 /*
  * TODO:
  * - Check if variable name is a reserve word
@@ -139,13 +144,9 @@ public class Parser {
 							if (!space.getVariables().containsKey(name)) {
 								space.addVariable(name, new Integer(assignment));
 							} else {
-								System.out.println(codeSpace);
-								System.out.println(name);
-								
 								throw new Error("Variable already defined");
 							}
 						} else {
-							System.out.println(section);
 							throw new Error("Error with variable declaration");
 						}
 					} else {
@@ -170,10 +171,12 @@ public class Parser {
 				System.out.println(codeSpace);
 				break;
 			case "cout":
-				String[] lineSplit = line.replaceAll("\\s+", " ").substring(5).split("\\+");
-				String toPrint = "";
+				String[] lineSplit = line.trim().substring(5).split("\\+");
+				Object toPrint = null;
 
 				for (String segment : lineSplit) {
+					segment = segment.trim();
+					
 					if (segment.contains("\"")) {
 						int first = segment.trim().indexOf("\"");
 						int last = segment.trim().lastIndexOf("\"");
@@ -183,15 +186,13 @@ public class Parser {
 						}
 
 						if (first == 0 && last == segment.trim().length() - 1) {
-							toPrint += segment.trim().substring(first + 2, last);
+							contoPrint, segment.trim().substring(first + 1, last);
 						} else {
 							throw new Error("Error with string parsing");
 						}
 					} else if (space.getVariables().get(segment.trim()) != null) {
 						toPrint += space.getVariables().get(segment.trim()).toData();
 					} else {
-						System.out.println(segment);
-						System.out.println(line);
 						throw new Error("Could not find variable or reserve word");
 					}
 				}
@@ -227,24 +228,21 @@ public class Parser {
 						if (member != null) {
 							member.assign(split[1].trim());
 						} else {
-							System.out.println(codeSpace);
-							System.out.println(beforeSplit[0]);
 							throw new Error("Variable not found");
 						}
 					} else {
-						System.out.println(removedSpaces);
 						throw new Error("Variable in assignment error");
 					}
 				} else if (line.contains("(") && line.contains(")")) {
 					String[] methodSplit = line.split("\\(");
-
+					
 					Method method = codeSpace.findMethod(methodSplit[0].trim());
 					if (method != null) {
-						method.execute();
+						String parameters = line.trim().substring(line.trim().indexOf("(") + 1, line.trim().lastIndexOf(")"));
+						
+						method.execute(parameters);
 					}
 				} else {
-					System.out.println(line + "LINED");
-					
 					throw new Error("Could not find reserve word or variable: " + words[0]);
 				}
 			}
@@ -316,7 +314,42 @@ public class Parser {
 			throw new Error("Header declaration error");
 		}
 	}
-
+	
+	public String toActualDetails(CodeSpace codeSpace, String parameters){
+		String toReturn = "";
+		
+		for(String string : parameters.split(",")){
+			if(codeSpace.getVariables().containsKey(string)){
+				toReturn += ", " + codeSpace.getVariables().get(string).toData();
+			}else{
+				//Check all data types
+				if(Members.INTEGER.getMember().isType(string)){
+					toReturn += ", " + string;
+				}else{
+					throw new Error("Parameter type not recognized");
+				}
+			}
+		}
+		
+		return toReturn;
+	}
+	
+	public static Object concat(Object first, Object second){
+		Member member = null;
+		
+		if(first instanceof Member){
+			member = (Member) first;
+		}else{
+			member = Member.findMember(first);
+		}
+		
+		return member.concatenate(second);
+	}
+	
+	public Object toObject(String line){
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		Parser.parse(new File("test.txt"));
 	}

@@ -1,4 +1,4 @@
-package me.averydurrant.compiler;
+package me.averydurrant.compiler.members;
 
 /* A member that is used to derive variables */
 public abstract class Member {
@@ -50,12 +50,18 @@ public abstract class Member {
 	 * more than arg
 	 **/
 	public abstract int compareTo(Object object);
+
+	public abstract boolean isType(Object object);
 	
-	public static Member findMember(Object object){
-		if(Integer.isType(object)){
-			return new Integer(object);
+	public abstract Object concatenate(Object object);
+
+	public static Member findMember(Object object) {
+		for (Members members : Members.values()) {
+			if (members.getMember().isType(object)) {
+				return new Integer(object);
+			}
 		}
-		
+
 		return null;
 	}
 }

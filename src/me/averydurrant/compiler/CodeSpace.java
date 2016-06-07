@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.averydurrant.compiler.members.Member;
+import me.averydurrant.compiler.methods.Method;
+
 public class CodeSpace {
 	private Map<String, Member> variables = new HashMap<String, Member>();
 	private List<Method> methods = new ArrayList<Method>();

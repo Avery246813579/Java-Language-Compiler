@@ -1,12 +1,12 @@
-	public void test(int x){
-		x = 30;
-		
-		//cout x;
+	public void test(int x, int y){
+		cout x + y;
 	}
 
-	test();
+	test(5, 9);
 
 	int x = 43;
+	
+
 	int y = 98, z= 54, u;
 	z = 31;
 	u=34;
