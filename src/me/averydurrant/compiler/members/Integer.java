@@ -14,10 +14,15 @@ public class Integer extends Member {
 	@Override
 	public void assign(Object object) {
 		try {
+			if(object instanceof java.lang.Integer){
+				this.data = object;
+				
+				return;
+			}
+			
 			this.data = java.lang.Integer.parseInt((String) object);
 		} catch (Exception ex) {
 			throw new Error("Error assigning integer value to " + object);
-
 		}
 	}
 
@@ -85,7 +90,11 @@ public class Integer extends Member {
 
 	public boolean isType(Object object) {
 		try {
-			java.lang.Integer.parseInt((String) object);
+			if (object instanceof java.lang.Integer) {
+				return true;
+			} else {
+				java.lang.Integer.parseInt((String) object);
+			}
 
 			return true;
 		} catch (Exception ex) {
@@ -100,7 +109,7 @@ public class Integer extends Member {
 
 	@Override
 	public Object concatenate(Object object) {
-		int data = (int) object;
+		int data = (int) this.data;
 
 		Members member = null;
 		if (object instanceof Member) {
@@ -113,12 +122,13 @@ public class Integer extends Member {
 				_String string = (_String) object;
 
 				object = string.toData();
-				member = Members.INTEGER;
+				member = Members.STRING;
 			}
 		} else {
 			for (Members members : Members.values()) {
 				if (members.getMember().isType(object)) {
 					member = members;
+					break;
 				}
 			}
 		}
@@ -128,10 +138,10 @@ public class Integer extends Member {
 		}
 
 		switch (member) {
-			case STRING:
-				throw new Error("Could not concatenate Integer with a String");
-			case INTEGER:
-				data += (int) object;
+		case STRING:
+			throw new Error("Could not concatenate Integer with a String");
+		case INTEGER:
+			data += java.lang.Integer.parseInt((String) object);
 		}
 
 		return data;

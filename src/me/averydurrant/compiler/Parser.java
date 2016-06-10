@@ -171,33 +171,8 @@ public class Parser {
 				System.out.println(codeSpace);
 				break;
 			case "cout":
-				String[] lineSplit = line.trim().substring(5).split("\\+");
-				Object toPrint = null;
+				System.out.println(crat(space, line.trim().substring(5)));
 
-				for (String segment : lineSplit) {
-					segment = segment.trim();
-					
-					if (segment.contains("\"")) {
-						int first = segment.trim().indexOf("\"");
-						int last = segment.trim().lastIndexOf("\"");
-
-						if (first == last) {
-							throw new Error("Error with string parsing");
-						}
-
-						if (first == 0 && last == segment.trim().length() - 1) {
-							contoPrint, segment.trim().substring(first + 1, last);
-						} else {
-							throw new Error("Error with string parsing");
-						}
-					} else if (space.getVariables().get(segment.trim()) != null) {
-						toPrint += space.getVariables().get(segment.trim()).toData();
-					} else {
-						throw new Error("Could not find variable or reserve word");
-					}
-				}
-
-				System.out.println(toPrint);
 				break;
 			default:
 				if (space.getVariables().get(words[0]) != null) {
@@ -235,11 +210,12 @@ public class Parser {
 					}
 				} else if (line.contains("(") && line.contains(")")) {
 					String[] methodSplit = line.split("\\(");
-					
+
 					Method method = codeSpace.findMethod(methodSplit[0].trim());
 					if (method != null) {
-						String parameters = line.trim().substring(line.trim().indexOf("(") + 1, line.trim().lastIndexOf(")"));
-						
+						String parameters = line.trim().substring(line.trim().indexOf("(") + 1,
+								line.trim().lastIndexOf(")"));
+
 						method.execute(parameters);
 					}
 				} else {
@@ -314,42 +290,116 @@ public class Parser {
 			throw new Error("Header declaration error");
 		}
 	}
-	
-	public String toActualDetails(CodeSpace codeSpace, String parameters){
+
+	public String toActualDetails(CodeSpace codeSpace, String parameters) {
 		String toReturn = "";
-		
-		for(String string : parameters.split(",")){
-			if(codeSpace.getVariables().containsKey(string)){
+
+		for (String string : parameters.split(",")) {
+			if (codeSpace.getVariables().containsKey(string)) {
 				toReturn += ", " + codeSpace.getVariables().get(string).toData();
-			}else{
-				//Check all data types
-				if(Members.INTEGER.getMember().isType(string)){
+			} else {
+				if (Member.findMember(string) != null) {
 					toReturn += ", " + string;
-				}else{
+				} else {
 					throw new Error("Parameter type not recognized");
 				}
 			}
 		}
-		
+
 		return toReturn;
 	}
-	
-	public static Object concat(Object first, Object second){
+
+	public static Object concat(Object first, Object second) {
 		Member member = null;
-		
-		if(first instanceof Member){
+
+		if (first == null) {
+			return second;
+		}
+
+		if (first instanceof Member) {
 			member = (Member) first;
-		}else{
+		} else {
 			member = Member.findMember(first);
 		}
-		
+
 		return member.concatenate(second);
 	}
 	
-	public Object toObject(String line){
+	public static String getWithoutVariables(CodeSpace codeSpace, String expression){
+		String[] lineSplit = expression.trim().split("\\+");
+
+		for(int i = 0; i < lineSplit.length; i++){
+			String prefix = "", suffix = "", line = lineSplit[i];
+			
+			while(line.startsWith("(")){
+				prefix += "(";
+				line = line.substring(1);
+			}
+		}
+	}
+
+//	public static Object crat(CodeSpace space, String line) {
+//		String[] lineSplit = line.trim().split("\\+");
+//		Object toPrint = null;
+//
+//		String addingConcat = "";
+//		boolean adding = false;
+//		for (String segment : lineSplit) {
+//			segment = segment.trim();
+//			
+//			if(segment.isEmpty()){
+//				continue;
+//			}
+//			
+//			if(adding){
+//				if(segment.endsWith(")")){
+//	 				addingConcat += " + " + segment.substring(0, segment.length() - 1); 
+//	 				
+//	 				toPrint = concat(toPrint, crat(space, addingConcat));
+//	 				adding = false;
+//				}else{
+//					addingConcat += " + " + segment;
+//				}
+//				
+//				continue;
+//			}
+//
+//			if (segment.contains("\"")) {
+//				int first = segment.trim().indexOf("\"");
+//				int last = segment.trim().lastIndexOf("\"");
+//
+//				if (first == last) {     
+//					throw new Error("Error with string parsing");
+//				}
+//
+//				if (first == 0 && last == segment.trim().length() - 1) {
+//					toPrint = concat(toPrint, segment.trim().substring(first + 1, last));
+//				} else {
+//					throw new Error("Error with string parsing");
+//				}
+//			} else if (space.getVariables().get(segment.trim()) != null) {
+//				toPrint = concat(toPrint, space.getVariables().get(segment.trim()).toData());
+//			} else if (segment.trim().startsWith("(")) {
+//				addingConcat = segment.substring(1);
+//				adding = true;
+//			} else {
+//				Member member = Member.findMember(segment.trim());
+//				
+//				if(member != null && !member.getName().equals("me.averydurrant.compiler.members._String")){
+//					toPrint = concat(toPrint, segment.trim());
+//				}else {
+//					throw new Error("Could not find Variable or Reference to print out: " + segment);
+//				}
+//			} 
+//		}
+//
+//		return toPrint;
+//	}
+
+	public Object toObject(String line) {
 		return null;
 	}
-	
+
 	public static void main(String[] args) {
 		Parser.parse(new File("test.txt"));
 	}

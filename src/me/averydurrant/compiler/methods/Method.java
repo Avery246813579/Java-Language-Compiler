@@ -57,8 +57,8 @@ public class Method {
 		for (int i = 0; i < this.parameters.size(); i++) {
 			Parameter parameter = this.parameters.get(i);
 
-			if (parameter.getMember().isType(paraSplit[0])) {
-				parameter.getMember().assign(paraSplit[0]);
+			if (parameter.getMember().isType(paraSplit[i].trim())) {
+				parameter.getMember().assign(paraSplit[i].trim());
 				codeSpace.addVariable(parameter.getName(), parameter.getMember());
 			} else {
 				throw new Error("Parameter miss match");

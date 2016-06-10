@@ -1,5 +1,8 @@
 package me.averydurrant.compiler.members;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /* A member that is used to derive variables */
 public abstract class Member {
 	private String[] keywords;
@@ -52,16 +55,32 @@ public abstract class Member {
 	public abstract int compareTo(Object object);
 
 	public abstract boolean isType(Object object);
-	
+
 	public abstract Object concatenate(Object object);
 
 	public static Member findMember(Object object) {
 		for (Members members : Members.values()) {
 			if (members.getMember().isType(object)) {
-				return new Integer(object);
+				Member toReturn = null;
+
+				try {
+					Class<?> clazz = Class.forName(members.getMember().getClass().getName());
+
+					Constructor<?> ctor = clazz.getConstructor(Object.class);
+
+					toReturn = (Member) ctor.newInstance(new Object[] { object });
+				}  catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return toReturn;
 			}
 		}
 
 		return null;
+	}
+
+	public String getName() {
+		return getClass().getName();
 	}
 }
